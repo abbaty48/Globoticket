@@ -8,8 +8,9 @@ jobs:
   source:
     runs-on: ubuntu-latest
     steps:
-    -  name: Getting source
-       uses: actions/checkout@v3
+    -  name: Getting source and Outputting
+       uses: actions/checkout@v4.2.2
+    -  run: |
         echo "| **Test Name** | **Result**|" >> "$GITHUB_STEP_SUMMARY"
         echo "|--|--|" >> "$GITHUB_STEP_SUMMARY"
         echo "| validate numbers are > 0 |:white_check_mark:|" >> "$GITHUB_STEP_SUMMARY"
@@ -24,6 +25,7 @@ jobs:
 
     -  name: Restore
        run: dotnet restore
+      
 
     -  name: Build
        run: dotnet build --no-restore
