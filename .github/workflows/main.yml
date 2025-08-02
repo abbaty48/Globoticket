@@ -1,34 +1,19 @@
-name: GloboTicket
+name: Building using containerization
+
 on:
   push:
-    branches:
-      -  main
-  workflow_dispatch:
+    branches: main
+  
 jobs:
-  source:
+  container-build-job:
     runs-on: ubuntu-latest
+    container:
+      image: mcr.microsoft.com/dotnet/sdk:6.0
     steps:
-    -  name: Getting source and Outputting
-       uses: actions/checkout@v4.2.2
-    -  run: |
-        echo "| **Test Name** | **Result**|" >> "$GITHUB_STEP_SUMMARY"
-        echo "|--|--|" >> "$GITHUB_STEP_SUMMARY"
-        echo "| validate numbers are > 0 |:white_check_mark:|" >> "$GITHUB_STEP_SUMMARY"
-        echo "| validate numbers are < 10 |:white_check_mark:|" >> "$GITHUB_STEP_SUMMARY"
-        echo "| validate numbers are odd |:x:|" >> "$GITHUB_STEP_SUMMARY"
-        echo "| validate numbers are even|:white_check_mark:|" >> "$GITHUB_STEP_SUMMARY"
-         
-    -  name: Setup .Net
-       uses: actions/setup-dotnet@v4
-       with:
-         dotnet-version: 8.0.x
+    - uses: actions/checkout@v3
+    
+    - name: Build
+      run: dotnet build
 
-    -  name: Restore
-       run: dotnet restore
-      
-
-    -  name: Build
-       run: dotnet build --no-restore
-
-    -  name: Test
-       run: dotnet test --no-build --verbosity normal
+    - name: Test
+      run: dotnet test --no-build --verbosity normal
