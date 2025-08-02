@@ -1,4 +1,4 @@
-name: Getting the source for a git workflow
+name: GloboTicket
 on:
   push:
     branches:
@@ -13,3 +13,14 @@ jobs:
        with:
          ref: main
          fetch-depth: 1
+         
+    -  name: Setup .Net
+       uses: actions/setup-dotnet@v3
+       with:
+         dotnet-version: 6.0.x
+
+    -  name: Release
+       run: dotnet release
+
+    -  name: Build
+       run: dotnet build --no-restore
