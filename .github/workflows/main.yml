@@ -17,3 +17,13 @@ jobs:
 
     - name: Test
       run: dotnet test --no-build --verbosity normal
+
+    - name: Run Trivy vulnerability scanner
+      uses: aquasecurity/trivy-action@master
+      with:
+        image-ref: '${{env.containerRegistry}}/${{env.imageRepository}}:${{github_run_number}}'
+        format: 'table'
+        severity: 'CRITICAL_HIGH'
+        exit-code: '1'
+      
+        
