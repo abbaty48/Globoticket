@@ -1,11 +1,18 @@
 name: "Chapter8: Compile and Test fast feedback"
 
+permissions:
+  actions: write
+  contents: read
+
+env:
+  GH_TOKEN: ${{ github.token }}
+
 on:
   workflow_dispatch:
-  push:
-    branches: ['feature/*']
+  pull_request:
+    branches: [ <<main>> ]
     paths:
-      -  'fronted/**'
+      -  'frontend/**'
       -  'catalog/**'
       -  'ordering/**'
 
@@ -13,16 +20,20 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    -  name: 'Checkout to source'
+    -  name: Checkout to source
        uses: actions/checkout@v3
 
     -  name: 'Setup .Net'
        uses: actions/setup-node@v3
        with:
          dotnet-version: 6.x
+         
+    -  name: Add markdown report logger for frontend project
+       run: dotnet add unittests/unittests.csproj package LiquidTestReports.Markdown
 
-    -  name: 'Restore'
-       run: dotnet restore
+    -  name: Test
+       run: dotnet test --logger "liquid.md;logfilename=testResults.md"
 
-    -  name: 'Build'
-       run:  dotnet build --no-restore 
+    -  name: Output the results to the actions jobsummary
+       if: always()
+       run: cat $(find . -name testResults.md) >> $GITHUB_STEP_SUMMARY
