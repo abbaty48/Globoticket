@@ -1,29 +1,28 @@
-name: Building using containerization
+name: "Chapter8: Compile and Test fast feedback"
 
 on:
+  workflow_dispatch:
   push:
-    branches: main
-  
+    branches: ['feature/*']
+    paths:
+      -  'fronted/**'
+      -  'catalog/**'
+      -  'ordering/**'
+
 jobs:
-  container-build-job:
+  build:
     runs-on: ubuntu-latest
-    container:
-      image: mcr.microsoft.com/dotnet/sdk:6.0
     steps:
-    - uses: actions/checkout@v3
-    
-    - name: Build
-      run: dotnet build
+    -  name: 'Checkout to source'
+       uses: actions/checkout@v3
 
-    - name: Test
-      run: dotnet test --no-build --verbosity normal
+    -  name: 'Setup .Net'
+       uses: actions/setup-node@v3
+       with:
+         dotnet-version: 6.x
 
-    - name: Run Trivy vulnerability scanner
-      uses: aquasecurity/trivy-action@master
-      with:
-        image-ref: '${{env.containerRegistry}}/${{env.imageRepository}}:${{github.run_number}}'
-        format: 'table'
-        severity: 'CRITICAL_HIGH'
-        exit-code: '1'
-      
-        
+    -  name: 'Restore'
+       run: dotnet restore
+
+    -  name: 'Build'
+       run:  dotnet build --no-restore 
